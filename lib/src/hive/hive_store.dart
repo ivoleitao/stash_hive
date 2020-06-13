@@ -2,21 +2,36 @@ import 'package:hive/hive.dart';
 import 'package:stash/stash_api.dart';
 import 'package:stash_hive/src/hive/hive_extensions.dart';
 
+/// Hive based implemention of a [CacheStore]
 class HiveStore extends CacheStore {
+  /// The base location of the Hive Box
+  final String _path;
+
+  /// The function that converts between the Map representation to the
+  /// object stored in the cache
   final dynamic Function(Map<String, dynamic>) _fromEncodable;
 
-  final String path;
+  /// List of boxes per cache name
   final Map<String, LazyBox<Map>> _cacheStoreMap = {};
 
-  HiveStore(this.path, {dynamic Function(Map<String, dynamic>) fromEncodable})
+  /// Builds a [HiveStore].
+  ///
+  /// * [_path]: The base location of the Hive storage
+  /// * [fromEncodable]: A custom function the converts to the object from a `Map<String, dynamic>` representation
+  HiveStore(this._path, {dynamic Function(Map<String, dynamic>) fromEncodable})
       : _fromEncodable = fromEncodable;
 
+  /// Returns the [LazyBox] where a cache is stored or opens a new box it under the base path
+  ///
+  /// * [name]: The name of the cache
+  ///
+  /// Returns the [LazyBox] where the cache is stored
   Future<LazyBox<Map>> _cacheStore(String name) {
     if (_cacheStoreMap.containsKey(name)) {
       return Future.value(_cacheStoreMap[name]);
     }
 
-    return Hive.openLazyBox<Map>(name, path: path).then((store) {
+    return Hive.openLazyBox<Map>(name, path: _path).then((store) {
       _cacheStoreMap[name] = store;
 
       return store;
@@ -34,20 +49,45 @@ class HiveStore extends CacheStore {
   @override
   Future<Iterable<String>> keys(String name) => _getKeys(name);
 
+  /// Gets a [CacheEntry] from the provided [LazyBox]
+  ///
+  /// * [store]: The Hive box
+  /// * [key]: The cache key
+  ///
+  /// Returns a [CacheEntry]
   Future<CacheEntry> _getEntryFromStore(LazyBox<Map> store, String key) =>
       store.get(key).then((value) => value != null
           ? HiveExtensions.fromJson(value.cast<String, dynamic>(),
               fromJson: _fromEncodable)
           : null);
 
+  /// Returns the [CacheEntry] for the named cache value specified [key].
+  ///
+  /// * [name]: The cache name
+  /// * [key]: The cache key
+  ///
+  /// Returns a [CacheEntry]
   Future<CacheEntry> _getEntry(String name, String key) {
     return _cacheStore(name).then((store) => _getEntryFromStore(store, key));
   }
 
+  /// Returns the [CacheStat] for the named cache value specified [key].
+  ///
+  /// * [name]: The cache name
+  /// * [key]: The cache key
+  ///
+  /// Returns a [CacheStat]
   Future<CacheStat> _getStat(String name, String key) {
     return _getEntry(name, key).then((entry) => entry.stat);
   }
 
+  /// Returns a [Iterable] over all the [CacheStore] [CacheStat]s keys requested
+  /// of a named cache.
+  ///
+  /// * [name]: The cache name
+  /// * [keys]: The list of keys
+  ///
+  /// Return a list of [CacheStat]s
   Future<Iterable<CacheStat>> _getStats(String name, Iterable<String> keys) {
     return Stream.fromIterable(keys)
         .asyncMap((key) => _getStat(name, key))
@@ -58,6 +98,12 @@ class HiveStore extends CacheStore {
   Future<Iterable<CacheStat>> stats(String name) =>
       _getKeys(name).then((keys) => _getStats(name, keys));
 
+  /// Returns a [Iterable] over all the [CacheStore] [CacheEntry]s
+  /// of a named cache.
+  ///
+  /// * [name]: The cache name
+  ///
+  /// Return a list of [CacheEntry]s
   Future<Iterable<CacheEntry>> _getValues(String name) {
     return _getKeys(name).then((keys) => Stream.fromIterable(keys)
         .asyncMap((key) => _getEntry(name, key))
