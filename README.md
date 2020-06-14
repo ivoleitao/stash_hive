@@ -1,5 +1,5 @@
 # stash_hive
-A [Stash](https://github.com/ivoleitao/stash) Hive storage extension
+A [stash](https://github.com/ivoleitao/stash) storage extension for [hive](https://pub.dev/packages/hive)
 
 [![Pub Package](https://img.shields.io/pub/v/stash_hive.svg?style=flat-square)](https://pub.dartlang.org/packages/stash_hive)
 [![Build Status](https://github.com/ivoleitao/shadertoy_api/workflows/build/badge.svg)](https://github.com/ivoleitao/stash_hive/actions)
