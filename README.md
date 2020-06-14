@@ -88,6 +88,7 @@ void main() async {
   print(value);
 }
 ```
+
 ## Contributing
 
 This library is developed by best effort, in the motto of "Scratch your own itch!", meaning APIs that are meaningful for the author use cases.

@@ -17,13 +17,13 @@ export 'src/hive/hive_store.dart';
 /// * [cacheLoader]: The [CacheLoader] that should be used to fetch a new value upon expiration
 /// * [fromEncodable]: A custom function the converts to the object from a `Map<String, dynamic>` representation
 ///
-/// Returns a new [Cache]
+/// Returns a new [Cache] backed by a [HiveStore]
 Cache newHiveCache(String path,
     {String cacheName,
+    ExpiryPolicy expiryPolicy,
     KeySampler sampler,
     EvictionPolicy evictionPolicy,
     int maxEntries,
-    ExpiryPolicy expiryPolicy,
     CacheLoader cacheLoader,
     dynamic Function(dynamic) fromEncodable}) {
   return Cache.newCache(HiveStore(path, fromEncodable: fromEncodable),

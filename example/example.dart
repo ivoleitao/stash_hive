@@ -29,7 +29,7 @@ void main() async {
   // Temporary path
   final path = Directory.systemTemp.path;
 
-  // Creates cache with a hive based storage backend with the capacity of 10 entries
+  // Creates cache with a Hive based storage backend with the capacity of 10 entries
   final cache = newHiveCache(path,
       maxEntries: 10, fromEncodable: (json) => Task.fromJson(json));
 
