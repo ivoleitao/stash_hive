@@ -1,6 +1,10 @@
-## 1.0.0-dev.3
+## 1.0.0-dev.4
 
 - TODO
+
+## 1.0.0-dev.3
+
+- Updated sdk to a supported version on pub
 
 ## 1.0.0-dev.2
 
