@@ -9,7 +9,7 @@ class HiveStore extends CacheStore {
 
   /// The function that converts between the Map representation to the
   /// object stored in the cache
-  final dynamic Function(Map<String, dynamic>) _fromEncodable;
+  final dynamic Function(Map<String, dynamic>)? _fromEncodable;
 
   /// List of boxes per cache name
   final Map<String, LazyBox<Map>> _cacheStoreMap = {};
@@ -18,7 +18,7 @@ class HiveStore extends CacheStore {
   ///
   /// * [_path]: The base location of the Hive storage
   /// * [fromEncodable]: A custom function the converts to the object from a `Map<String, dynamic>` representation
-  HiveStore(this._path, {dynamic Function(Map<String, dynamic>) fromEncodable})
+  HiveStore(this._path, {dynamic Function(Map<String, dynamic>)? fromEncodable})
       : _fromEncodable = fromEncodable;
 
   /// Returns the [LazyBox] where a cache is stored or opens a new box it under the base path
@@ -55,7 +55,7 @@ class HiveStore extends CacheStore {
   /// * [key]: The cache key
   ///
   /// Returns a [CacheEntry]
-  Future<CacheEntry> _getEntryFromStore(LazyBox<Map> store, String key) =>
+  Future<CacheEntry?> _getEntryFromStore(LazyBox<Map> store, String key) =>
       store.get(key).then((value) => value != null
           ? HiveExtensions.fromJson(value.cast<String, dynamic>(),
               fromJson: _fromEncodable)
@@ -67,7 +67,7 @@ class HiveStore extends CacheStore {
   /// * [key]: The cache key
   ///
   /// Returns a [CacheEntry]
-  Future<CacheEntry> _getEntry(String name, String key) {
+  Future<CacheEntry?> _getEntry(String name, String key) {
     return _cacheStore(name).then((store) => _getEntryFromStore(store, key));
   }
 
@@ -77,8 +77,8 @@ class HiveStore extends CacheStore {
   /// * [key]: The cache key
   ///
   /// Returns a [CacheStat]
-  Future<CacheStat> _getStat(String name, String key) {
-    return _getEntry(name, key).then((entry) => entry.stat);
+  Future<CacheStat?> _getStat(String name, String key) {
+    return _getEntry(name, key).then((entry) => entry?.stat);
   }
 
   /// Returns a [Iterable] over all the [CacheStore] [CacheStat]s keys requested
@@ -88,15 +88,16 @@ class HiveStore extends CacheStore {
   /// * [keys]: The list of keys
   ///
   /// Return a list of [CacheStat]s
-  Future<Iterable<CacheStat>> _getStats(String name, Iterable<String> keys) {
+  Future<Iterable<CacheStat?>> _getStats(String name, Iterable<String> keys) {
     return Stream.fromIterable(keys)
         .asyncMap((key) => _getStat(name, key))
         .toList();
   }
 
   @override
-  Future<Iterable<CacheStat>> stats(String name) =>
-      _getKeys(name).then((keys) => _getStats(name, keys));
+  Future<Iterable<CacheStat>> stats(String name) => _getKeys(name)
+      .then((keys) => _getStats(name, keys))
+      .then((stats) => stats.map((stat) => stat!));
 
   /// Returns a [Iterable] over all the [CacheStore] [CacheEntry]s
   /// of a named cache.
@@ -107,6 +108,7 @@ class HiveStore extends CacheStore {
   Future<Iterable<CacheEntry>> _getValues(String name) {
     return _getKeys(name).then((keys) => Stream.fromIterable(keys)
         .asyncMap((key) => _getEntry(name, key))
+        .map((stat) => stat!)
         .toList());
   }
 
@@ -118,12 +120,12 @@ class HiveStore extends CacheStore {
       _cacheStore(name).then((store) => store.containsKey(key));
 
   @override
-  Future<CacheStat> getStat(String name, String key) {
+  Future<CacheStat?> getStat(String name, String key) {
     return _getStat(name, key);
   }
 
   @override
-  Future<Iterable<CacheStat>> getStats(String name, Iterable<String> keys) {
+  Future<Iterable<CacheStat?>> getStats(String name, Iterable<String> keys) {
     return _getStats(name, keys);
   }
 
@@ -131,12 +133,12 @@ class HiveStore extends CacheStore {
   Future<void> setStat(String name, String key, CacheStat stat) {
     return _cacheStore(name).then((store) {
       return _getEntryFromStore(store, key)
-          .then((entry) => store.put(key, (entry..stat = stat).toHiveJson()));
+          .then((entry) => store.put(key, (entry!..stat = stat).toHiveJson()));
     });
   }
 
   @override
-  Future<CacheEntry> getEntry(String name, String key) {
+  Future<CacheEntry?> getEntry(String name, String key) {
     return _getEntry(name, key);
   }
 

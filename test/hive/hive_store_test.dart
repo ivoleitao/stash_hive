@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 
 class DefaultContext extends TestContext<HiveStore> {
   DefaultContext(ValueGenerator generator,
-      {dynamic Function(Map<String, dynamic>) fromEncodable})
+      {dynamic Function(Map<String, dynamic>)? fromEncodable})
       : super(generator, fromEncodable: fromEncodable);
 
   @override
@@ -17,7 +17,7 @@ class DefaultContext extends TestContext<HiveStore> {
   }
 
   @override
-  void check(actual, matcher, {String reason, skip}) {
+  void check(actual, matcher, {String? reason, skip}) {
     expect(actual, matcher, reason: reason, skip: skip);
   }
 }
