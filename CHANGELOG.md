@@ -2,6 +2,10 @@
 
 - Null safety support
 
+## 1.0.2
+
+- Updated to the most recent version of stash
+
 ## 1.0.1
 
 - Updated dependencies
