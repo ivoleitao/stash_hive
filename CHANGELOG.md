@@ -1,6 +1,6 @@
-## 1.0.2
+## 2.0.0-nullsafety.1
 
-- TODO
+- Null safety support
 
 ## 1.0.1
 

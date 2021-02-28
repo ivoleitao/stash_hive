@@ -10,9 +10,9 @@ environment:
 
 dependencies:
   hive: ^1.6.0-nullsafety.2
-    #  stash: ^1.0.2
-  stash:
-    path: ../stash
+  stash: ^2.0.0-nullsafety.1
+  #stash:
+  #  path: ../stash
 
 dev_dependencies:
   pedantic: ^1.10.0
