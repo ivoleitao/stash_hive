@@ -1,5 +1,5 @@
 name: stash_hive
-version: 2.0.0-nullsafety.1
+version: 2.0.0-nullsafety.2
 description: >-
   Hive storage extension for the stash caching API. Provides support to store caches
   in the Hive database
@@ -9,12 +9,13 @@ environment:
   sdk: '>=2.12.0-0 <3.0.0'
 
 dependencies:
-  hive: ^1.6.0-nullsafety.2
-  stash: ^2.0.0-nullsafety.2
+  hive: ^2.0.2
+  stash: ^2.0.0-nullsafety.3
   #stash:
   #  path: ../stash
 
 dev_dependencies:
-  pedantic: ^1.10.0
-  test: ^1.16.4
-  # test_coverage: ^0.4.3
+  pedantic: ^1.11.0
+  test: ^1.16.8
+
+scripts: derry.yaml
